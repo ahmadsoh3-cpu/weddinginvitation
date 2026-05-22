@@ -1,5 +1,5 @@
 /**
- * Hannan & Jiya — Nikkah RSVP → Google Sheets
+ * Hannan & Jayesha — Nikkah RSVP → Google Sheets
  *
  * SETUP:
  * 1. Open YOUR Google Sheet (the one where you want RSVPs).
@@ -34,8 +34,8 @@ function setupSheet() {
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
     sheet.getRange(1, 1, 1, headers.length)
       .setFontWeight('bold')
-      .setBackground('#1B3A2D')
-      .setFontColor('#FAF3E8');
+      .setBackground('#E6D9C8')
+      .setFontColor('#7D6B55');
     sheet.setFrozenRows(1);
     sheet.autoResizeColumns(1, headers.length);
   }

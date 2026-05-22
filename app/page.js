@@ -5,17 +5,27 @@ import { submitRsvp } from './lib/submitRsvp';
 
 const CONTACT_NUMBER = '+923364204333';
 const WHATSAPP_NUMBER = '923364204333';
-const VENUE_MAPS_URL = 'https://maps.app.goo.gl/2wmopJ2gLnKUi5VZ7';
+const VENUE_MAPS_URL = 'https://maps.app.goo.gl/B6AZX9tVDVF85AQY8';
+
 /* ─────────────────────────────────────────────────────────────
-   DRAPE CURTAIN
+   DRAPE CURTAIN (from GitHub main — velvet CSS drapes)
 ───────────────────────────────────────────────────────────── */
-function DrapeCurtain({ isOpen, isGone }) {
+function DrapeCurtain({ isOpen, isGone, onReveal }) {
   if (isGone) return null;
 
+  const waiting = !isOpen;
+
+  const handleReveal = () => {
+    if (!waiting || !onReveal) return;
+    onReveal();
+  };
+
   return (
-    <div className={`curtain-wrapper ${isOpen ? 'curtain-opening' : ''}`} aria-hidden="true">
-      {/* Velvet Left Curtain */}
-      <div className={`curtain curtain-left ${isOpen ? 'curtain-left-open' : ''}`}>
+    <div
+      className={`curtain-wrapper ${isOpen ? 'curtain-opening' : 'curtain-wrapper--waiting'}`}
+      data-open={isOpen ? 'true' : undefined}
+    >
+      <div className="curtain curtain-left">
         <div className="curtain-fabric" />
         <div className="curtain-trim trim-right" />
         <div className="curtain-tassel tassel-right">
@@ -25,7 +35,6 @@ function DrapeCurtain({ isOpen, isGone }) {
         </div>
       </div>
 
-      {/* Center reveal badge */}
       <div className={`curtain-center ${isOpen ? 'curtain-center-fade' : ''}`}>
         <div className="curtain-monogram">
           <span className="mono-letter">H</span>
@@ -33,10 +42,10 @@ function DrapeCurtain({ isOpen, isGone }) {
           <span className="mono-letter">J</span>
         </div>
         <p className="curtain-invite-text">You are cordially invited</p>
+        {waiting && <p className="curtain-tap-hint">Touch anywhere to enter</p>}
       </div>
 
-      {/* Velvet Right Curtain */}
-      <div className={`curtain curtain-right ${isOpen ? 'curtain-right-open' : ''}`}>
+      <div className="curtain curtain-right">
         <div className="curtain-fabric" />
         <div className="curtain-trim trim-left" />
         <div className="curtain-tassel tassel-left">
@@ -46,8 +55,16 @@ function DrapeCurtain({ isOpen, isGone }) {
         </div>
       </div>
 
-      {/* Center seam gold line */}
       <div className="curtain-seam" />
+
+      {waiting && (
+        <button
+          type="button"
+          className="curtain-tap-overlay"
+          onClick={handleReveal}
+          aria-label="Touch to open the invitation"
+        />
+      )}
     </div>
   );
 }
@@ -103,7 +120,7 @@ function Countdown() {
   const [time, setTime] = useState({ d: 0, h: 0, m: 0, s: 0 });
 
   useEffect(() => {
-    const target = new Date('2026-06-05T11:00:00');
+    const target = new Date('2026-06-12T18:00:00');
     const tick = () => {
       const diff = target - Date.now();
       if (diff <= 0) return setTime({ d: 0, h: 0, m: 0, s: 0 });
@@ -174,19 +191,21 @@ function ScratchReveal({ children }) {
     grad.addColorStop(1, '#C9A96E');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
-    ctx.fillStyle = 'rgba(27, 58, 45, 0.12)';
+    ctx.fillStyle = 'rgba(196, 165, 116, 0.15)';
     for (let x = 0; x < w; x += 14) {
       for (let y = 0; y < h; y += 14) {
         if ((x + y) % 28 === 0) ctx.fillRect(x, y, 6, 6);
       }
     }
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-    ctx.font = '600 13px Jost, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Scratch to reveal the date', w / 2, h / 2 - 6);
-    ctx.font = 'italic 400 15px "Cormorant Garamond", serif';
-    ctx.fillStyle = 'rgba(27, 58, 45, 0.55)';
-    ctx.fillText('✦  drag or rub here  ✦', w / 2, h / 2 + 18);
+    ctx.fillStyle = 'rgba(255, 252, 245, 0.95)';
+    ctx.font = '700 11px Jost, sans-serif';
+    ctx.fillText('SCRATCH HERE', w / 2, h / 2 - 22);
+    ctx.font = '600 14px Jost, sans-serif';
+    ctx.fillText('Reveal date & time', w / 2, h / 2 - 2);
+    ctx.font = 'italic 400 16px "Cormorant Garamond", serif';
+    ctx.fillStyle = 'rgba(90, 60, 20, 0.75)';
+    ctx.fillText('✦  rub or drag with finger  ✦', w / 2, h / 2 + 22);
   }, []);
 
   useEffect(() => {
@@ -257,22 +276,35 @@ function ScratchReveal({ children }) {
   };
 
   return (
-    <div
-      ref={containerRef}
-      className={`scratch-reveal ${revealed ? 'scratch-revealed' : ''}`}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerLeave={onPointerUp}
-    >
-      <div className="scratch-content">{children}</div>
+    <div className="scratch-block">
       {!revealed && (
-        <canvas
-          ref={canvasRef}
-          className="scratch-canvas"
-          aria-label="Scratch to reveal Nikkah date and time"
-        />
+        <p className="scratch-hint" role="status">
+          <span className="scratch-hint-badge">Scratch card</span>
+          Rub the gold foil below to reveal the Nikkah date &amp; time
+        </p>
       )}
+      <div
+        ref={containerRef}
+        className={`scratch-reveal ${revealed ? 'scratch-revealed' : ''}`}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerLeave={onPointerUp}
+      >
+        <div className="scratch-content">{children}</div>
+        {!revealed && (
+          <>
+            <canvas
+              ref={canvasRef}
+              className="scratch-canvas"
+              aria-label="Scratch the gold foil to reveal Nikkah date and time"
+            />
+            <span className="scratch-finger-hint" aria-hidden="true">
+              Scratch ↓
+            </span>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -474,17 +506,41 @@ function RsvpForm() {
 /* ─────────────────────────────────────────────────────────────
    MAIN PAGE
 ───────────────────────────────────────────────────────────── */
+const WEDDING_MUSIC_SRC = '/wedding-music.mp3';
+
 export default function WeddingPage() {
   const [curtainOpen, setCurtainOpen] = useState(false);
   const [curtainGone, setCurtainGone] = useState(false);
   const [pageReady, setPageReady] = useState(false);
+  const revealStarted = useRef(false);
+  const musicRef = useRef(null);
+
+  const playWeddingMusic = useCallback(() => {
+    const audio = musicRef.current;
+    if (!audio) return;
+    audio.volume = 0.55;
+    audio.play().catch(() => {});
+  }, []);
+
+  const handleCurtainReveal = useCallback(() => {
+    if (revealStarted.current) return;
+    revealStarted.current = true;
+    setCurtainOpen(true);
+    playWeddingMusic();
+    setTimeout(() => setPageReady(true), 1000);
+    setTimeout(() => setCurtainGone(true), 2600);
+  }, [playWeddingMusic]);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setCurtainOpen(true), 1400);
-    const t2 = setTimeout(() => setPageReady(true), 2600);
-    const t3 = setTimeout(() => setCurtainGone(true), 3400);
-    return () => [t1, t2, t3].forEach(clearTimeout);
-  }, []);
+    if (curtainGone) {
+      document.body.style.overflow = '';
+      return;
+    }
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [curtainGone]);
 
   useEffect(() => {
     if (!pageReady) return;
@@ -498,14 +554,25 @@ export default function WeddingPage() {
 
   return (
     <>
-      <DrapeCurtain isOpen={curtainOpen} isGone={curtainGone} />
+      <audio
+        ref={musicRef}
+        src={WEDDING_MUSIC_SRC}
+        loop
+        preload="auto"
+        aria-label="Background music"
+      />
+
+      <DrapeCurtain isOpen={curtainOpen} isGone={curtainGone} onReveal={handleCurtainReveal} />
 
       <div className={`page ${pageReady ? 'page-ready' : ''}`}>
         <FloatingPetals />
 
         {/* ── HERO ─────────────────────────────────── */}
         <section className="hero">
-          <div className="hero-inner">
+          <div className="hero-bg-ornament" aria-hidden="true" />
+          <div className="hero-card reveal">
+            <div className="hero-card-frame" aria-hidden="true" />
+            <div className="hero-inner">
 
             {/* Arabesque top ornament */}
             <div className="hero-arabesque reveal">
@@ -526,13 +593,13 @@ export default function WeddingPage() {
             </div>
 
             <div className="hero-names reveal">
-              <h1 className="name groom-name">Hannan Ahmad</h1>
+              <h1 className="name groom-name">Hannan Ahmed</h1>
               <div className="names-join">
                 <div className="join-line" />
-                <span className="join-script">weds</span>
+                <span className="join-script">&</span>
                 <div className="join-line" />
               </div>
-              <h1 className="name bride-name">Jiya Farooqi</h1>
+              <h1 className="name bride-name">Jayesha Farooqi</h1>
             </div>
 
             <GoldDivider wide />
@@ -542,15 +609,10 @@ export default function WeddingPage() {
               the pleasure of your company at our Nikkah
             </p>
 
-            <div className="hero-date reveal">
-              <div className="date-gem">✦</div>
-              <div className="date-block">
-                <span className="date-day">Thursday</span>
-                <span className="date-num">5</span>
-                <span className="date-month">June 2026</span>
-              </div>
-              <div className="date-gem">✦</div>
-            </div>
+            <p className="hero-save-date reveal">
+              <span className="hero-save-date-label">Save the celebration</span>
+              <span className="hero-save-date-hint">Date &amp; time revealed below — scratch to unveil</span>
+            </p>
 
             {/* Bottom arabesque */}
             <div className="hero-arabesque hero-arabesque-bottom reveal">
@@ -561,13 +623,14 @@ export default function WeddingPage() {
                 <circle cx="180" cy="20" r="3" fill="var(--gold)" opacity="0.7"/>
               </svg>
             </div>
+            </div>
           </div>
 
           <div className="scroll-hint">
             <div className="scroll-track">
               <div className="scroll-dot" />
             </div>
-            <span className="scroll-text">Scroll to explore</span>
+            <span className="scroll-text">Scroll — scratch the card below for date &amp; time</span>
           </div>
         </section>
 
@@ -588,11 +651,11 @@ export default function WeddingPage() {
                 <div className="event-details">
                   <div className="event-row">
                     <span className="event-label">Date</span>
-                    <span className="event-value">Thursday, 5th June 2026</span>
+                    <span className="event-value">Friday, 12th June 2026</span>
                   </div>
                   <div className="event-row">
                     <span className="event-label">Time</span>
-                    <span className="event-value">11:00 AM</span>
+                    <span className="event-value">6:00 PM</span>
                   </div>
                 </div>
               </ScratchReveal>
@@ -656,7 +719,7 @@ export default function WeddingPage() {
           <div className="rsvp-inner">
             <div className="small-ornament">— ✦ —</div>
             <h2 className="section-title">RSVP</h2>
-            <p className="section-sub">Kindly respond by 25th May 2026</p>
+            <p className="section-sub">Kindly respond by 5th June 2026</p>
 
             <RsvpForm />
           </div>
@@ -678,8 +741,8 @@ export default function WeddingPage() {
               <text x="50" y="62" textAnchor="middle" fill="var(--gold)" fontSize="7" fontFamily="var(--font-jost)" letterSpacing="3" opacity="0.8">2026</text>
             </svg>
           </div>
-          <p className="footer-script">Hannan & Jiya</p>
-          <p className="footer-date">5th June 2026</p>
+          <p className="footer-script">Hannan & Jayesha</p>
+          <p className="footer-date">12th June 2026</p>
           <GoldDivider />
           <p className="footer-closing">
             With gratitude and love, we look forward to celebrating with you.
