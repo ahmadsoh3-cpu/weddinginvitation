@@ -5,6 +5,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 const CONTACT_NUMBER = '+923364204333';
 const WHATSAPP_NUMBER = '923364204333';
 const VENUE_MAPS_URL = 'https://maps.app.goo.gl/2wmopJ2gLnKUi5VZ7';
+const GOOGLE_SCRIPT_URL =
+  process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL ||
+  'https://script.google.com/macros/s/AKfycbw92A65JMorbXMFKeTh0G0n7PnLLZct0NaBOBak7JhEPQpAPhD4h5E5DAE0FZvePu0Vvg/exec';
 
 /* ─────────────────────────────────────────────────────────────
    DRAPE CURTAIN
@@ -317,13 +320,14 @@ function RsvpForm() {
   });
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const update = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
     if (error) setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const name = form.name.trim();
     const phone = form.phone.trim();
@@ -338,25 +342,33 @@ function RsvpForm() {
     const guests = Math.min(6, Math.max(1, parseInt(form.guests, 10) || 1));
     const attending =
       form.attend === 'yes' ? 'Joyfully Accept ✦' : 'Regretfully Decline';
-    const message = [
-      'Nikkah RSVP — Hannan & Jiya',
-      '',
-      `Name: ${name}`,
-      `Phone: ${phone}`,
-      `Guests: ${guests}`,
-      `Attending: ${attending}`,
-      form.note.trim() ? `Note: ${form.note.trim()}` : null,
-    ]
-      .filter(Boolean)
-      .join('\n');
 
-    window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-      '_blank',
-      'noopener,noreferrer'
-    );
-    setSubmitted(true);
+    setSubmitting(true);
     setError('');
+
+    try {
+      // text/plain avoids CORS preflight so Apps Script receives the body
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          name,
+          phone,
+          guests: String(guests),
+          attend: form.attend,
+          attendingLabel: attending,
+          note: form.note.trim(),
+        }),
+      });
+      setSubmitted(true);
+    } catch {
+      setError(
+        'Could not send your RSVP. Please try again or contact us on WhatsApp.'
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -365,8 +377,7 @@ function RsvpForm() {
         <div className="rsvp-success-icon">✦</div>
         <h3 className="rsvp-success-title">Thank you!</h3>
         <p className="rsvp-success-text">
-          WhatsApp should open with your response. Send the message to complete
-          your RSVP.
+          Your RSVP has been received. We look forward to celebrating with you.
         </p>
         <button
           type="button"
@@ -460,8 +471,8 @@ function RsvpForm() {
           onChange={update('note')}
         />
       </div>
-      <button type="submit" className="rsvp-btn">
-        <span>Send My Response</span>
+      <button type="submit" className="rsvp-btn" disabled={submitting}>
+        <span>{submitting ? 'Sending…' : 'Send My Response'}</span>
         <span className="btn-ornament">◆</span>
       </button>
     </form>

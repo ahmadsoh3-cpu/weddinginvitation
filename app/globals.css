@@ -1050,6 +1050,11 @@ body {
   transition: color 0.3s ease;
 }
 .rsvp-btn:hover .btn-ornament { color: var(--green-deep); }
+.rsvp-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
 .rsvp-btn-secondary {
   margin-top: 8px;
