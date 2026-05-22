@@ -4,28 +4,52 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { submitRsvp } from './lib/submitRsvp';
 
 const CONTACT_NUMBER = '+923364204333';
+const REVEAL_STROKES = 38;
 const WHATSAPP_NUMBER = '923364204333';
 const VENUE_MAPS_URL = 'https://maps.app.goo.gl/B6AZX9tVDVF85AQY8';
 
 /* ─────────────────────────────────────────────────────────────
-   DRAPE CURTAIN (from GitHub main — velvet CSS drapes)
+   VELVET DRAPE CURTAIN (last pushed repo — tassels + CSS drapes)
 ───────────────────────────────────────────────────────────── */
 function DrapeCurtain({ isOpen, isGone, onReveal }) {
-  if (isGone) return null;
+  const leftRef = useRef(null);
+  const rightRef = useRef(null);
+  const openedRef = useRef(false);
 
   const waiting = !isOpen;
 
   const handleReveal = () => {
-    if (!waiting || !onReveal) return;
-    onReveal();
+    if (!waiting || openedRef.current) return;
+    openedRef.current = true;
+    onReveal?.();
   };
+
+  /* Backup slide — ensures panels move even if CSS data-open is delayed */
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const slide = () => {
+      if (leftRef.current) {
+        leftRef.current.style.transform = 'translate3d(-100%, 0, 0)';
+      }
+      if (rightRef.current) {
+        rightRef.current.style.transform = 'translate3d(100%, 0, 0)';
+      }
+    };
+
+    slide();
+    const id = requestAnimationFrame(slide);
+    return () => cancelAnimationFrame(id);
+  }, [isOpen]);
+
+  if (isGone) return null;
 
   return (
     <div
-      className={`curtain-wrapper ${isOpen ? 'curtain-opening' : 'curtain-wrapper--waiting'}`}
-      data-open={isOpen ? 'true' : undefined}
+      className={`curtain-wrapper ${waiting ? 'curtain-wrapper--waiting' : 'curtain-opening'}`}
+      data-open={isOpen ? 'true' : 'false'}
     >
-      <div className="curtain curtain-left">
+      <div ref={leftRef} className="curtain curtain-left">
         <div className="curtain-fabric" />
         <div className="curtain-trim trim-right" />
         <div className="curtain-tassel tassel-right">
@@ -42,10 +66,17 @@ function DrapeCurtain({ isOpen, isGone, onReveal }) {
           <span className="mono-letter">J</span>
         </div>
         <p className="curtain-invite-text">You are cordially invited</p>
-        {waiting && <p className="curtain-tap-hint">Touch anywhere to enter</p>}
+        {waiting && (
+          <>
+            <p className="curtain-tap-hint">Touch anywhere to enter</p>
+            <button type="button" className="curtain-open-btn" onClick={handleReveal}>
+              Open invitation
+            </button>
+          </>
+        )}
       </div>
 
-      <div className="curtain curtain-right">
+      <div ref={rightRef} className="curtain curtain-right">
         <div className="curtain-fabric" />
         <div className="curtain-trim trim-left" />
         <div className="curtain-tassel tassel-left">
@@ -117,13 +148,18 @@ function FloatingPetals() {
    COUNTDOWN TIMER
 ───────────────────────────────────────────────────────────── */
 function Countdown() {
+  const [mounted, setMounted] = useState(false);
   const [time, setTime] = useState({ d: 0, h: 0, m: 0, s: 0 });
 
   useEffect(() => {
-    const target = new Date('2026-06-12T18:00:00');
+    setMounted(true);
+    const target = new Date('2026-06-12T18:00:00+05:00');
     const tick = () => {
-      const diff = target - Date.now();
-      if (diff <= 0) return setTime({ d: 0, h: 0, m: 0, s: 0 });
+      const diff = target.getTime() - Date.now();
+      if (diff <= 0) {
+        setTime({ d: 0, h: 0, m: 0, s: 0 });
+        return;
+      }
       setTime({
         d: Math.floor(diff / 86400000),
         h: Math.floor((diff / 3600000) % 24),
@@ -144,7 +180,7 @@ function Countdown() {
   ];
 
   return (
-    <section className="countdown-section reveal">
+    <section className={`countdown-section reveal ${mounted ? 'countdown-live' : ''}`}>
       <div className="small-ornament">✦ ✦ ✦</div>
       <p className="eyebrow">The Celebration Begins In</p>
       <div className="countdown-grid">
@@ -157,6 +193,72 @@ function Countdown() {
       </div>
       <div className="small-ornament">✦ ✦ ✦</div>
     </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   WEDDING CARD FLORALS (reference invitation style)
+───────────────────────────────────────────────────────────── */
+function WeddingCardFlorals({ revealed }) {
+  return (
+    <div
+      className={`wedding-card-florals ${revealed ? 'wedding-card-florals--visible' : ''}`}
+      aria-hidden="true"
+    >
+      <img src="/wedding-floral.png" alt="" className="wedding-floral wedding-floral-left" />
+      <img src="/wedding-floral.png" alt="" className="wedding-floral wedding-floral-right" />
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PETAL BURST (on scratch reveal)
+───────────────────────────────────────────────────────────── */
+function PetalBurst({ origin }) {
+  const [petals, setPetals] = useState([]);
+
+  useEffect(() => {
+    if (!origin) return;
+
+    const batch = Array.from({ length: 96 }, (_, i) => ({
+      id: `${Date.now()}-${i}`,
+      left: origin.x + (Math.random() - 0.5) * origin.width * 1.2,
+      top: origin.y + (Math.random() - 0.5) * origin.height * 0.6,
+      size: 7 + Math.random() * 16,
+      dur: 2.2 + Math.random() * 2.8,
+      delay: Math.random() * 0.65,
+      drift: (Math.random() - 0.5) * 220,
+      spin: Math.random() * 720 - 360,
+      hue: Math.floor(Math.random() * 40) - 15,
+    }));
+
+    setPetals(batch);
+    const clear = setTimeout(() => setPetals([]), 6500);
+    return () => clearTimeout(clear);
+  }, [origin]);
+
+  if (!petals.length) return null;
+
+  return (
+    <div className="petal-burst-layer" aria-hidden="true">
+      {petals.map((p) => (
+        <div
+          key={p.id}
+          className="petal-burst-item"
+          style={{
+            left: `${p.left}px`,
+            top: `${p.top}px`,
+            width: `${p.size}px`,
+            height: `${p.size * 1.55}px`,
+            '--dur': `${p.dur}s`,
+            '--del': `${p.delay}s`,
+            '--drift': `${p.drift}px`,
+            '--spin': `${p.spin}deg`,
+            '--hue': `${p.hue}deg`,
+          }}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -180,8 +282,12 @@ function ScratchReveal({ children }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const [revealed, setRevealed] = useState(false);
+  const [burstOrigin, setBurstOrigin] = useState(null);
   const scratching = useRef(false);
-  const scratchedRatio = useRef(0);
+  const scratchStrokes = useRef(0);
+  const lastPoint = useRef(null);
+  const isRevealing = useRef(false);
+  const hasScratched = useRef(false);
 
   const drawFoil = useCallback((ctx, w, h) => {
     const grad = ctx.createLinearGradient(0, 0, w, h);
@@ -199,28 +305,33 @@ function ScratchReveal({ children }) {
     }
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(255, 252, 245, 0.95)';
-    ctx.font = '700 11px Jost, sans-serif';
-    ctx.fillText('SCRATCH HERE', w / 2, h / 2 - 22);
-    ctx.font = '600 14px Jost, sans-serif';
-    ctx.fillText('Reveal date & time', w / 2, h / 2 - 2);
-    ctx.font = 'italic 400 16px "Cormorant Garamond", serif';
+    const cy = h / 2;
+    ctx.font = '600 11px "Cormorant Garamond", serif';
+    ctx.fillText('SCRATCH HERE', w / 2, cy - 14);
+    ctx.font = '500 13px "Cormorant Garamond", serif';
+    ctx.fillText('Date · Time · Venue', w / 2, cy + 2);
+    ctx.font = 'italic 400 12px "Cormorant Garamond", serif';
     ctx.fillStyle = 'rgba(90, 60, 20, 0.75)';
-    ctx.fillText('✦  rub or drag with finger  ✦', w / 2, h / 2 + 22);
+    ctx.fillText('✦ rub to reveal ✦', w / 2, cy + 16);
   }, []);
 
   useEffect(() => {
+    if (revealed) return;
     const container = containerRef.current;
     const canvas = canvasRef.current;
     if (!container || !canvas) return;
 
     const resize = () => {
+      if (hasScratched.current) return;
       const rect = container.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
+      if (rect.width < 1 || rect.height < 1) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
       canvas.style.width = `${rect.width}px`;
       canvas.style.height = `${rect.height}px`;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { alpha: true });
+      if (!ctx) return;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       drawFoil(ctx, rect.width, rect.height);
     };
@@ -229,82 +340,145 @@ function ScratchReveal({ children }) {
     const ro = new ResizeObserver(resize);
     ro.observe(container);
     return () => ro.disconnect();
-  }, [drawFoil]);
+  }, [drawFoil, revealed]);
 
-  const scratch = useCallback((clientX, clientY) => {
-    if (revealed) return;
-    const canvas = canvasRef.current;
+  const completeReveal = useCallback(() => {
+    if (isRevealing.current || revealed) return;
+    isRevealing.current = true;
+    scratching.current = false;
+    lastPoint.current = null;
+
     const container = containerRef.current;
-    if (!canvas || !container) return;
-
-    const rect = container.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-    const ctx = canvas.getContext('2d');
-    const dpr = window.devicePixelRatio || 1;
-    ctx.save();
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.arc(x, y, 22, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-
-    if (scratchedRatio.current < 0.38) {
-      const w = canvas.width;
-      const h = canvas.height;
-      const data = canvas.getContext('2d').getImageData(0, 0, w, h).data;
-      let cleared = 0;
-      for (let i = 3; i < data.length; i += 4) {
-        if (data[i] === 0) cleared++;
-      }
-      scratchedRatio.current = cleared / (w * h);
-      if (scratchedRatio.current >= 0.38) setRevealed(true);
+    if (container) {
+      const box = container.getBoundingClientRect();
+      setBurstOrigin({
+        x: box.left,
+        y: box.top,
+        width: box.width,
+        height: box.height,
+      });
     }
+    setRevealed(true);
   }, [revealed]);
 
+  const scratchAt = useCallback(
+    (clientX, clientY) => {
+      if (revealed || isRevealing.current) return;
+      const canvas = canvasRef.current;
+      const container = containerRef.current;
+      if (!canvas || !container) return;
+
+      const rect = container.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      ctx.save();
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = 34;
+
+      const prev = lastPoint.current;
+      if (prev) {
+        ctx.beginPath();
+        ctx.moveTo(prev.x, prev.y);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      ctx.arc(x, y, 17, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      hasScratched.current = true;
+      lastPoint.current = { x, y };
+      scratchStrokes.current += 1;
+
+      if (scratchStrokes.current >= REVEAL_STROKES) {
+        completeReveal();
+      }
+    },
+    [revealed, completeReveal]
+  );
+
   const onPointerDown = (e) => {
+    if (revealed || isRevealing.current) return;
+    e.preventDefault();
+    const el = containerRef.current;
+    if (el?.setPointerCapture) {
+      try {
+        el.setPointerCapture(e.pointerId);
+      } catch {
+        /* ignore */
+      }
+    }
     scratching.current = true;
-    scratch(e.clientX, e.clientY);
+    lastPoint.current = null;
+    scratchAt(e.clientX, e.clientY);
   };
+
   const onPointerMove = (e) => {
-    if (!scratching.current) return;
-    scratch(e.clientX, e.clientY);
+    if (!scratching.current || revealed || isRevealing.current) return;
+    e.preventDefault();
+    scratchAt(e.clientX, e.clientY);
   };
-  const onPointerUp = () => {
+
+  const endScratch = (e) => {
     scratching.current = false;
+    lastPoint.current = null;
+    const el = containerRef.current;
+    if (el?.releasePointerCapture && e?.pointerId != null) {
+      try {
+        if (el.hasPointerCapture?.(e.pointerId)) {
+          el.releasePointerCapture(e.pointerId);
+        }
+      } catch {
+        /* ignore */
+      }
+    }
   };
+
+  const onPointerUp = (e) => endScratch(e);
+  const onPointerCancel = (e) => endScratch(e);
 
   return (
     <div className="scratch-block">
       {!revealed && (
         <p className="scratch-hint" role="status">
           <span className="scratch-hint-badge">Scratch card</span>
-          Rub the gold foil below to reveal the Nikkah date &amp; time
+          Rub the gold foil to reveal date, time &amp; venue
         </p>
       )}
       <div
         ref={containerRef}
-        className={`scratch-reveal ${revealed ? 'scratch-revealed' : ''}`}
+        className={`scratch-reveal scratch-reveal--compact ${revealed ? 'scratch-revealed' : ''}`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
-        onPointerLeave={onPointerUp}
+        onPointerCancel={onPointerCancel}
+        onPointerLeave={(e) => {
+          if (!scratching.current) endScratch(e);
+        }}
       >
+        <WeddingCardFlorals revealed={revealed} />
         <div className="scratch-content">{children}</div>
+        <canvas
+          ref={canvasRef}
+          className={`scratch-canvas ${revealed ? 'scratch-canvas--done' : ''}`}
+          aria-hidden={revealed}
+          aria-label="Scratch the gold foil to reveal Nikkah date and time"
+        />
         {!revealed && (
-          <>
-            <canvas
-              ref={canvasRef}
-              className="scratch-canvas"
-              aria-label="Scratch the gold foil to reveal Nikkah date and time"
-            />
-            <span className="scratch-finger-hint" aria-hidden="true">
-              Scratch ↓
-            </span>
-          </>
+          <span className="scratch-finger-hint" aria-hidden="true">
+            Scratch here
+          </span>
         )}
       </div>
+      <PetalBurst origin={burstOrigin} />
     </div>
   );
 }
@@ -527,8 +701,8 @@ export default function WeddingPage() {
     revealStarted.current = true;
     setCurtainOpen(true);
     playWeddingMusic();
-    setTimeout(() => setPageReady(true), 1000);
-    setTimeout(() => setCurtainGone(true), 2600);
+    window.setTimeout(() => setPageReady(true), 1000);
+    window.setTimeout(() => setCurtainGone(true), 2600);
   }, [playWeddingMusic]);
 
   useEffect(() => {
@@ -543,13 +717,43 @@ export default function WeddingPage() {
   }, [curtainGone]);
 
   useEffect(() => {
-    if (!pageReady) return;
+    const markInView = () => {
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      document.querySelectorAll('.reveal').forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.top < vh) {
+          el.classList.add('in-view');
+        }
+      });
+    };
+
     const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add('in-view')),
-      { threshold: 0.12 }
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) e.target.classList.add('in-view');
+        });
+      },
+      { threshold: 0.05, rootMargin: '0px 0px -5% 0px' }
     );
+
     document.querySelectorAll('.reveal').forEach((el) => obs.observe(el));
-    return () => obs.disconnect();
+    markInView();
+    requestAnimationFrame(markInView);
+    window.addEventListener('resize', markInView);
+
+    return () => {
+      obs.disconnect();
+      window.removeEventListener('resize', markInView);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!pageReady) return;
+    const run = () => {
+      document.querySelectorAll('.reveal').forEach((el) => el.classList.add('in-view'));
+    };
+    run();
+    requestAnimationFrame(run);
   }, [pageReady]);
 
   return (
@@ -562,7 +766,11 @@ export default function WeddingPage() {
         aria-label="Background music"
       />
 
-      <DrapeCurtain isOpen={curtainOpen} isGone={curtainGone} onReveal={handleCurtainReveal} />
+      <DrapeCurtain
+        isOpen={curtainOpen}
+        isGone={curtainGone}
+        onReveal={handleCurtainReveal}
+      />
 
       <div className={`page ${pageReady ? 'page-ready' : ''}`}>
         <FloatingPetals />
@@ -611,7 +819,7 @@ export default function WeddingPage() {
 
             <p className="hero-save-date reveal">
               <span className="hero-save-date-label">Save the celebration</span>
-              <span className="hero-save-date-hint">Date &amp; time revealed below — scratch to unveil</span>
+              <span className="hero-save-date-hint">Details revealed below — scratch to unveil</span>
             </p>
 
             {/* Bottom arabesque */}
@@ -630,7 +838,7 @@ export default function WeddingPage() {
             <div className="scroll-track">
               <div className="scroll-dot" />
             </div>
-            <span className="scroll-text">Scroll — scratch the card below for date &amp; time</span>
+            <span className="scroll-text">Scroll — scratch below for date, time &amp; venue</span>
           </div>
         </section>
 
@@ -648,30 +856,21 @@ export default function WeddingPage() {
           <div className="events-grid events-grid-single">
             <EventCard icon="🕌" tag="Announcement" name="Nikkah">
               <ScratchReveal>
-                <div className="event-details">
-                  <div className="event-row">
-                    <span className="event-label">Date</span>
-                    <span className="event-value">Friday, 12th June 2026</span>
-                  </div>
-                  <div className="event-row">
-                    <span className="event-label">Time</span>
-                    <span className="event-value">6:00 PM</span>
-                  </div>
-                </div>
-              </ScratchReveal>
-              <div className="event-details event-details-venue">
-                <div className="event-row">
-                  <span className="event-label">Location</span>
+                <div className="wedding-reveal-card wedding-reveal-card--compact">
+                  <p className="wedding-reveal-day">Friday</p>
+                  <p className="wedding-reveal-date">12th June 2026</p>
+                  <p className="wedding-reveal-time-detail">6:00 PM</p>
+                  <p className="wedding-reveal-venue">Bahria Golf &amp; Country Club</p>
                   <a
                     href={VENUE_MAPS_URL}
-                    className="event-value event-map-link"
+                    className="wedding-reveal-map"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     View on Google Maps
                   </a>
                 </div>
-              </div>
+              </ScratchReveal>
             </EventCard>
           </div>
         </section>
@@ -737,8 +936,8 @@ export default function WeddingPage() {
                 const y = 50 + 42 * Math.sin(angle);
                 return <circle key={i} cx={x} cy={y} r="2" fill="var(--gold)" opacity="0.6" />;
               })}
-              <text x="50" y="45" textAnchor="middle" fill="var(--gold)" fontSize="14" fontFamily="var(--font-cormorant)" fontWeight="300">H ◆ J</text>
-              <text x="50" y="62" textAnchor="middle" fill="var(--gold)" fontSize="7" fontFamily="var(--font-jost)" letterSpacing="3" opacity="0.8">2026</text>
+              <text x="50" y="45" textAnchor="middle" fill="var(--gold)" fontSize="14" fontFamily="Cormorant Garamond, serif" fontWeight="300">H ◆ J</text>
+              <text x="50" y="62" textAnchor="middle" fill="var(--gold)" fontSize="7" fontFamily="Cormorant Garamond, serif" letterSpacing="3" opacity="0.8">2026</text>
             </svg>
           </div>
           <p className="footer-script">Hannan & Jayesha</p>

@@ -24,11 +24,7 @@
   --ease-soft:    cubic-bezier(0.4, 0, 0.2, 1);
   --ease-gentle:  cubic-bezier(0.45, 0.05, 0.15, 1);
 
-  --font-cormorant: 'Cormorant Garamond', 'Georgia', serif;
-  --font-playfair:  'Playfair Display', 'Georgia', serif;
-  --font-tangerine: 'Tangerine', cursive;
-  --font-vibes:     'Great Vibes', cursive;
-  --font-jost:      'Jost', 'system-ui', sans-serif;
+  --font-wedding: 'Cormorant Garamond', 'Georgia', serif;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -51,7 +47,7 @@ body {
     radial-gradient(ellipse at 85% 92%, rgba(230, 217, 200, 0.4) 0%, transparent 50%),
     url("data:image/svg+xml,%3Csvg width='52' height='52' viewBox='0 0 52 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M26 0 L28 24 L52 26 L28 28 L26 52 L24 28 L0 26 L24 24Z' fill='%23C4A574' fill-opacity='0.03'/%3E%3C/svg%3E");
   color: var(--text);
-  font-family: var(--font-cormorant), 'Georgia', serif;
+  font-family: var(--font-wedding);
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -73,20 +69,25 @@ body {
 .curtain-wrapper {
   position: fixed;
   inset: 0;
-  z-index: 9000;
+  z-index: 99999;
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
-.curtain-wrapper--waiting {
+.curtain-wrapper--waiting,
+.curtain-wrapper.curtain-opening {
   pointer-events: auto;
   touch-action: manipulation;
+  cursor: pointer;
 }
 
 .curtain-wrapper--waiting .curtain,
-.curtain-wrapper--waiting .curtain-seam {
+.curtain-wrapper--waiting .curtain-seam,
+.curtain-wrapper.curtain-opening .curtain,
+.curtain-wrapper.curtain-opening .curtain-seam {
   pointer-events: none;
 }
 
@@ -94,15 +95,38 @@ body {
   position: absolute;
   inset: 0;
   z-index: 200;
-  width: 100%;
-  height: 100%;
   margin: 0;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.curtain-open-btn {
+  position: relative;
+  z-index: 30;
+  margin-top: 1.25rem;
+  padding: 12px 28px;
+  border: 1px solid rgba(196, 165, 116, 0.7);
+  background: rgba(255, 252, 245, 0.92);
+  color: var(--gold-dark);
+  font-family: var(--font-wedding);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  box-shadow: 0 4px 20px rgba(90, 74, 56, 0.12);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.curtain-open-btn:hover {
+  background: var(--gold);
+  color: #fff;
 }
 
 .curtain {
@@ -114,14 +138,22 @@ body {
   z-index: 15;
   transform: translate3d(0, 0, 0);
   transition: transform 2s cubic-bezier(0.76, 0, 0.24, 1);
+  will-change: transform;
 }
 
-.curtain-wrapper[data-open='true'] .curtain-left {
+.curtain-wrapper[data-open='true'] .curtain-left,
+.curtain-wrapper.curtain-opening .curtain-left {
   transform: translate3d(-100%, 0, 0);
 }
 
-.curtain-wrapper[data-open='true'] .curtain-right {
+.curtain-wrapper[data-open='true'] .curtain-right,
+.curtain-wrapper.curtain-opening .curtain-right {
   transform: translate3d(100%, 0, 0);
+}
+
+.curtain-wrapper[data-open='true'] .tassel-strand,
+.curtain-wrapper.curtain-opening .tassel-strand {
+  animation: none;
 }
 
 .curtain-fabric {
@@ -202,7 +234,7 @@ body {
   animation: tassel-swing 2.5s ease-in-out infinite alternate;
 }
 
-.curtain-wrapper[data-open='true'] .tassel-strand {
+.curtain-opening .tassel-strand {
   animation: none;
 }
 
@@ -236,12 +268,18 @@ body {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 20;
+  z-index: 120;
   text-align: center;
   transition: opacity 0.6s ease;
   pointer-events: none;
   padding: 0 24px;
   width: min(100%, 420px);
+}
+
+.curtain-wrapper--waiting .curtain-open-btn {
+  pointer-events: auto;
+  position: relative;
+  z-index: 210;
 }
 
 .curtain-center.curtain-center-fade {
@@ -258,7 +296,7 @@ body {
 }
 
 .mono-letter {
-  font-family: var(--font-vibes);
+  font-family: var(--font-wedding);
   font-size: clamp(60px, 10vw, 90px);
   color: var(--gold-dark);
   text-shadow: 0 0 30px rgba(232, 212, 176, 0.6);
@@ -271,7 +309,7 @@ body {
 }
 
 .curtain-invite-text {
-  font-family: var(--font-playfair);
+  font-family: var(--font-wedding);
   font-size: clamp(14px, 3.2vw, 18px);
   font-weight: 700;
   letter-spacing: 0.28em;
@@ -282,7 +320,7 @@ body {
 }
 
 .curtain-tap-hint {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.32em;
@@ -297,6 +335,7 @@ body {
   50%      { opacity: 1; }
 }
 
+.curtain-seam--hide,
 .curtain-opening .curtain-seam {
   opacity: 0;
   transition: opacity 0.8s ease 1.2s;
@@ -349,12 +388,11 @@ body {
    SCROLL REVEAL
 ═══════════════════════════════════════════════════════════ */
 .reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 1.2s var(--ease-gentle), transform 1.2s var(--ease-gentle);
+  opacity: 1;
+  transform: translateY(14px);
+  transition: transform 1s var(--ease-gentle), opacity 0.6s var(--ease-gentle);
 }
 .reveal.in-view {
-  opacity: 1;
   transform: translateY(0);
 }
 
@@ -468,7 +506,7 @@ body {
 
 /* Bismillah */
 .bismillah {
-  font-family: var(--font-playfair);
+  font-family: var(--font-wedding);
   font-size: clamp(20px, 3.8vw, 28px);
   color: var(--accent);
   letter-spacing: 0.06em;
@@ -487,7 +525,7 @@ body {
   box-shadow: 0 2px 16px rgba(196, 165, 116, 0.12);
 }
 .badge-text {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.38em;
@@ -504,27 +542,18 @@ body {
 }
 
 .name {
-  font-family: var(--font-playfair);
-  font-size: clamp(38px, 8.5vw, 68px);
-  font-weight: 500;
+  font-family: var(--font-wedding);
+  font-size: clamp(40px, 9vw, 64px);
+  font-weight: 400;
+  font-style: italic;
   line-height: 1.1;
-  color: #4a3828;
+  color: #b8955c;
   letter-spacing: 0.02em;
-  background: linear-gradient(
-    135deg,
-    #5a4228 0%,
-    #8a6848 35%,
-    #b8955c 55%,
-    #6a5038 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .groom-name,
 .bride-name {
-  text-shadow: none;
+  color: #b8955c;
 }
 
 .names-join {
@@ -540,19 +569,19 @@ body {
   background: linear-gradient(90deg, transparent, var(--gold), transparent);
 }
 .join-script {
-  font-family: var(--font-tangerine);
-  font-size: clamp(52px, 9vw, 72px);
-  font-weight: 700;
-  color: var(--gold-dark);
+  font-family: var(--font-wedding);
+  font-size: clamp(44px, 8vw, 60px);
+  font-weight: 300;
+  font-style: italic;
+  color: #9a7d52;
   white-space: nowrap;
-  letter-spacing: 0;
-  line-height: 0.85;
-  text-shadow: 0 2px 20px rgba(196, 165, 116, 0.35);
+  letter-spacing: 0.04em;
+  line-height: 0.9;
 }
 
 /* Tagline */
 .hero-tagline {
-  font-family: var(--font-playfair);
+  font-family: var(--font-wedding);
   font-size: clamp(18px, 2.8vw, 24px);
   color: var(--text-mid);
   line-height: 1.7;
@@ -573,7 +602,7 @@ body {
 }
 
 .hero-save-date-label {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 9px;
   letter-spacing: 0.4em;
   text-transform: uppercase;
@@ -581,7 +610,7 @@ body {
 }
 
 .hero-save-date-hint {
-  font-family: var(--font-playfair);
+  font-family: var(--font-wedding);
   font-size: clamp(14px, 2.2vw, 17px);
   font-style: italic;
   color: var(--text-light);
@@ -631,7 +660,7 @@ body {
   100% { top: 42px; opacity: 0; }
 }
 .scroll-text {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 9px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -649,8 +678,15 @@ body {
   align-items: center;
   gap: 14px;
   width: 200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .gold-divider-wide { width: 100%; max-width: 400px; }
+
+.event-card .gold-divider {
+  width: min(200px, 70%);
+  margin: 4px auto 22px;
+}
 .divider-rule {
   flex: 1;
   height: 1px;
@@ -665,6 +701,10 @@ body {
 /* ═══════════════════════════════════════════════════════════
    COUNTDOWN
 ═══════════════════════════════════════════════════════════ */
+.countdown-section.countdown-live .countdown-num {
+  opacity: 1;
+}
+
 .countdown-section {
   padding: 80px 24px;
   text-align: center;
@@ -683,7 +723,7 @@ body {
 }
 
 .small-ornament {
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   color: var(--gold);
   font-size: 14px;
   letter-spacing: 8px;
@@ -693,7 +733,7 @@ body {
 .countdown-section .small-ornament:last-child { margin-bottom: 0; margin-top: 20px; }
 
 .eyebrow {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 11px;
   font-weight: 300;
   letter-spacing: 5px;
@@ -721,7 +761,7 @@ body {
   position: absolute;
   left: 0;
   top: 12px;
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: 40px;
   color: var(--gold);
   opacity: 0.4;
@@ -729,7 +769,7 @@ body {
 }
 
 .countdown-num {
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: clamp(52px, 10vw, 80px);
   font-weight: 300;
   color: var(--gold-dark);
@@ -740,7 +780,7 @@ body {
 }
 
 .countdown-lbl {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 10px;
   font-weight: 300;
   letter-spacing: 3px;
@@ -761,7 +801,7 @@ body {
   margin-bottom: 16px;
 }
 .section-title {
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: clamp(32px, 6vw, 52px);
   font-weight: 400;
   color: var(--green-deep);
@@ -769,7 +809,7 @@ body {
   margin-bottom: 12px;
 }
 .section-sub {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 13px;
   font-weight: 300;
   letter-spacing: 3px;
@@ -796,6 +836,12 @@ body {
   grid-template-columns: 1fr;
   max-width: 420px;
   margin: 0 auto;
+  justify-items: center;
+  width: 100%;
+}
+
+.events-grid-single .event-card {
+  width: 100%;
 }
 
 /* Center decorative divider between cards */
@@ -855,7 +901,7 @@ body {
 }
 .event-icon { font-size: 32px; }
 .event-tag {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 5px;
@@ -866,7 +912,7 @@ body {
   border: 1px solid rgba(201,169,110,0.25);
 }
 .event-name {
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: clamp(28px, 5vw, 42px);
   font-weight: 400;
   color: var(--green-deep);
@@ -886,6 +932,9 @@ body {
 /* Scratch to reveal (Nikkah dates) */
 .scratch-block {
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .scratch-hint {
   display: flex;
@@ -893,25 +942,25 @@ body {
   align-items: center;
   gap: 8px;
   text-align: center;
-  font-family: var(--font-jost);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
+  font-family: var(--font-wedding);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--accent);
   margin-bottom: 12px;
   line-height: 1.5;
 }
 .scratch-hint-badge {
   display: inline-block;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--gold-dark);
-  background: rgba(196, 165, 116, 0.18);
-  border: 1px solid rgba(196, 165, 116, 0.45);
-  padding: 6px 14px;
-  border-radius: 2px;
+  background: rgba(196, 165, 116, 0.15);
+  border: 1px solid rgba(196, 165, 116, 0.4);
+  padding: 6px 16px;
   animation: scratch-hint-pulse 2s ease-in-out infinite;
 }
 @keyframes scratch-hint-pulse {
@@ -920,23 +969,230 @@ body {
 }
 .scratch-reveal {
   position: relative;
-  min-height: 120px;
+  min-height: 160px;
   border-radius: 2px;
   overflow: hidden;
   touch-action: none;
   cursor: crosshair;
   user-select: none;
-  border: 1px dashed rgba(196, 165, 116, 0.55);
-  box-shadow: inset 0 0 0 1px rgba(255, 252, 245, 0.4);
+  border: 1px solid rgba(196, 165, 116, 0.35);
+  box-shadow: 0 8px 32px rgba(90, 74, 56, 0.08);
+  background: #fff;
+}
+
+.scratch-reveal--compact {
+  width: 100%;
+  max-width: 320px;
+  min-height: 210px;
+  margin: 0 auto;
+}
+
+.scratch-revealed {
+  cursor: default;
+  border-color: rgba(196, 165, 116, 0.2);
+}
+
+.wedding-card-florals {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.wedding-floral {
+  position: absolute;
+  top: 50%;
+  width: 86px;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.22;
+  filter: saturate(1.1);
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: opacity 0.5s ease, width 0.5s ease;
+}
+
+.wedding-floral-left {
+  left: 2px;
+  transform: translateY(-50%) rotate(-6deg);
+}
+
+.wedding-floral-right {
+  right: 2px;
+  transform: translateY(-50%) scaleX(-1) rotate(6deg);
+}
+
+.wedding-card-florals--visible .wedding-floral {
+  opacity: 0.82;
+  width: 96px;
+}
+
+.wedding-card-florals--visible .wedding-floral-left {
+  left: -2px;
+}
+
+.wedding-card-florals--visible .wedding-floral-right {
+  right: -2px;
+}
+
+.scratch-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+/* Revealed invitation card (inside scratch) */
+.wedding-reveal-card {
+  text-align: center;
+  padding: clamp(48px, 12vw, 72px) clamp(20px, 5vw, 36px) clamp(40px, 10vw, 56px);
+  font-family: var(--font-wedding);
+  color: #3a3028;
+}
+
+.wedding-reveal-card--compact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+  padding: 18px 58px 16px;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+.scratch-revealed .wedding-reveal-card--compact {
+  background: rgba(255, 252, 247, 0.55);
+}
+
+.wedding-reveal-card--compact .wedding-reveal-day {
+  margin-bottom: 0.25rem;
+  width: 100%;
+}
+
+.wedding-reveal-card--compact .wedding-reveal-date {
+  font-size: clamp(20px, 5vw, 26px);
+  margin-bottom: 0.4rem;
+  width: 100%;
+}
+
+.wedding-reveal-card--compact .wedding-reveal-time-detail {
+  font-size: clamp(15px, 3.5vw, 18px);
+  letter-spacing: 0.14em;
+  margin-bottom: 0.55rem;
+  width: 100%;
+}
+
+.wedding-reveal-venue {
+  font-size: clamp(13px, 3vw, 15px);
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  color: #5a4a3a;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  max-width: 200px;
+  text-align: center;
+}
+
+.wedding-reveal-map {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(196, 165, 116, 0.45);
+  padding-bottom: 2px;
+  position: relative;
+  z-index: 2;
+}
+
+.wedding-reveal-map:hover {
+  color: var(--accent);
+}
+
+.wedding-reveal-pre {
+  font-size: clamp(13px, 2.4vw, 15px);
+  font-weight: 400;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: #5a4a3a;
+  margin-bottom: 1.25rem;
+  line-height: 1.6;
+}
+
+.wedding-reveal-names {
+  font-size: clamp(36px, 8vw, 56px);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.15;
+  color: #b8955c;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.wedding-reveal-amp {
+  font-style: normal;
+  font-weight: 300;
+  color: #9a7d52;
+  padding: 0 0.15em;
+}
+
+.wedding-reveal-divider {
+  font-size: 14px;
+  letter-spacing: 0.5em;
+  color: var(--gold);
+  margin: 1rem 0 1.25rem;
+  opacity: 0.85;
+}
+
+.wedding-reveal-day {
+  font-size: clamp(14px, 2.6vw, 17px);
+  font-weight: 400;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: #6a5a48;
+  margin-bottom: 0.35rem;
+}
+
+.wedding-reveal-date {
+  font-size: clamp(28px, 6vw, 40px);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #4a3c30;
+  margin-bottom: 1rem;
+}
+
+.wedding-reveal-time {
+  font-size: clamp(15px, 2.8vw, 19px);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  color: #5a4a3a;
+  margin-bottom: 0.25rem;
+}
+
+.wedding-reveal-time-detail {
+  font-size: clamp(18px, 3.2vw, 22px);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #7a6348;
 }
 .scratch-finger-hint {
   position: absolute;
-  bottom: 10px;
+  top: 8px;
+  bottom: auto;
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
   pointer-events: none;
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -946,25 +1202,94 @@ body {
   padding: 4px 10px;
   border-radius: 2px;
 }
-.scratch-content {
-  padding: 4px 0;
+.scratch-reveal--compact .scratch-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+  min-height: 200px;
+  box-sizing: border-box;
+}
+
+.scratch-reveal--compact.scratch-revealed .scratch-content {
+  padding: 6px 0 10px;
 }
 .scratch-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 2;
+  z-index: 3;
+  touch-action: none;
+  transition: opacity 0.45s ease;
 }
-.scratch-revealed {
-  cursor: default;
+
+.scratch-canvas--done {
+  opacity: 0;
+  pointer-events: none;
 }
 .scratch-revealed .scratch-content {
   animation: scratch-pop 1s var(--ease-gentle);
 }
+
+.scratch-revealed .wedding-card-florals {
+  z-index: 1;
+}
+
+@keyframes florals-bloom {
+  from { opacity: 0.15; }
+  to   { opacity: 0.82; }
+}
+
+.scratch-revealed .wedding-card-florals--visible .wedding-floral-left {
+  animation: florals-bloom 0.8s var(--ease-gentle) forwards;
+}
+
+.scratch-revealed .wedding-card-florals--visible .wedding-floral-right {
+  animation: florals-bloom 0.8s var(--ease-gentle) 0.12s forwards;
+}
+
 @keyframes scratch-pop {
   from { opacity: 0.7; transform: scale(0.99); }
   to   { opacity: 1; transform: scale(1); }
+}
+
+/* Petal shower when scratch is revealed */
+.petal-burst-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5000;
+  overflow: hidden;
+}
+
+.petal-burst-item {
+  position: fixed;
+  border-radius: 150% 0 150% 0;
+  background: radial-gradient(
+    ellipse at 35% 35%,
+    hsl(calc(345deg + var(--hue, 0deg)), 72%, 90%) 0%,
+    hsl(calc(350deg + var(--hue, 0deg)), 58%, 78%) 100%
+  );
+  filter: drop-shadow(0 1px 4px rgba(196, 165, 116, 0.25));
+  animation: petal-burst-fall var(--dur) ease-in forwards;
+  animation-delay: var(--del);
+  opacity: 0;
+}
+
+@keyframes petal-burst-fall {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(0.4);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.95;
+    transform: translate(0, 8px) rotate(calc(var(--spin) * 0.08)) scale(1);
+  }
+  100% {
+    transform: translate(var(--drift), 105vh) rotate(var(--spin));
+    opacity: 0;
+  }
 }
 .event-row {
   display: flex;
@@ -974,7 +1299,7 @@ body {
   font-size: 15px;
 }
 .event-label {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 11px;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -982,7 +1307,7 @@ body {
   white-space: nowrap;
 }
 .event-value {
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: 18px;
   color: var(--text);
   font-style: italic;
@@ -1020,7 +1345,7 @@ body {
   font-size: 16px;
 }
 .verse-text {
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: clamp(22px, 4vw, 30px);
   font-style: italic;
   font-weight: 300;
@@ -1029,7 +1354,7 @@ body {
   letter-spacing: 0.5px;
 }
 .verse-ref {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 12px;
   letter-spacing: 3px;
   color: var(--text-light);
@@ -1047,7 +1372,7 @@ body {
   margin: 0 auto;
 }
 .emergency-number {
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: clamp(22px, 4vw, 28px);
   color: var(--green-deep);
   letter-spacing: 1px;
@@ -1066,7 +1391,7 @@ body {
   padding: 14px 28px;
   border: 1.5px solid var(--gold);
   color: var(--green-deep);
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 12px;
   font-weight: 400;
   letter-spacing: 3px;
@@ -1136,7 +1461,7 @@ body {
   gap: 16px;
 }
 .form-label {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 10px;
   letter-spacing: 3px;
   text-transform: uppercase;
@@ -1146,7 +1471,7 @@ body {
   background: rgba(255, 252, 247, 0.85);
   border: 1px solid rgba(196, 165, 116, 0.35);
   color: var(--text);
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: 18px;
   padding: 12px 16px;
   outline: none;
@@ -1178,7 +1503,7 @@ body {
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: 18px;
   color: var(--text-mid);
   font-style: italic;
@@ -1216,7 +1541,7 @@ body {
   background: transparent;
   border: 1.5px solid var(--gold);
   color: var(--accent);
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: 20px;
   font-style: italic;
   letter-spacing: 2px;
@@ -1267,7 +1592,7 @@ body {
 }
 
 .form-error {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 12px;
   letter-spacing: 1px;
   color: #8b5a5a;
@@ -1290,13 +1615,13 @@ body {
   color: var(--gold);
 }
 .rsvp-success-title {
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: 32px;
   font-weight: 400;
   color: var(--accent);
 }
 .rsvp-success-text {
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: 18px;
   font-style: italic;
   color: var(--text-mid);
@@ -1322,13 +1647,13 @@ body {
   margin-bottom: 8px;
 }
 .footer-script {
-  font-family: var(--font-tangerine);
+  font-family: var(--font-wedding);
   font-size: clamp(40px, 8vw, 64px);
   color: var(--gold-dark);
   line-height: 1;
 }
 .footer-date {
-  font-family: var(--font-jost);
+  font-family: var(--font-wedding);
   font-size: 12px;
   letter-spacing: 6px;
   text-transform: uppercase;
@@ -1338,7 +1663,7 @@ body {
 .footer .divider-rule { background: linear-gradient(90deg, transparent, rgba(201,169,110,0.4) 40%, rgba(201,169,110,0.4) 60%, transparent); }
 .footer .divider-gem  { color: rgba(201,169,110,0.5); }
 .footer-closing {
-  font-family: var(--font-cormorant);
+  font-family: var(--font-wedding);
   font-size: 18px;
   font-style: italic;
   color: var(--text-light);
