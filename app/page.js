@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { submitRsvp } from './lib/submitRsvp';
 
 const CONTACT_NUMBER = '+923364204333';
 const WHATSAPP_NUMBER = '923364204333';
@@ -343,30 +344,19 @@ function RsvpForm() {
     setError('');
 
     try {
-      const res = await fetch('/api/rsvp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          phone,
-          guests: String(guests),
-          attend: form.attend,
-          attendingLabel: attending,
-          note: form.note.trim(),
-        }),
+      await submitRsvp({
+        name,
+        phone,
+        guests: String(guests),
+        attend: form.attend,
+        attendingLabel: attending,
+        note: form.note.trim(),
       });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Could not save RSVP');
-      }
-
       setSubmitted(true);
     } catch (err) {
       setError(
         err.message ||
-          'Could not send your RSVP. Please try again or contact us on WhatsApp.'
+          'Could not send your RSVP. Please try again or WhatsApp us at +923364204333.'
       );
     } finally {
       setSubmitting(false);
