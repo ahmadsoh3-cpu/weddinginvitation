@@ -5,10 +5,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 const CONTACT_NUMBER = '+923364204333';
 const WHATSAPP_NUMBER = '923364204333';
 const VENUE_MAPS_URL = 'https://maps.app.goo.gl/2wmopJ2gLnKUi5VZ7';
-const GOOGLE_SCRIPT_URL =
-  process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL ||
-  'https://script.google.com/macros/s/AKfycbw92A65JMorbXMFKeTh0G0n7PnLLZct0NaBOBak7JhEPQpAPhD4h5E5DAE0FZvePu0Vvg/exec';
-
 /* ─────────────────────────────────────────────────────────────
    DRAPE CURTAIN
 ───────────────────────────────────────────────────────────── */
@@ -347,11 +343,9 @@ function RsvpForm() {
     setError('');
 
     try {
-      // text/plain avoids CORS preflight so Apps Script receives the body
-      await fetch(GOOGLE_SCRIPT_URL, {
+      const res = await fetch('/api/rsvp', {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
           phone,
@@ -361,10 +355,18 @@ function RsvpForm() {
           note: form.note.trim(),
         }),
       });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Could not save RSVP');
+      }
+
       setSubmitted(true);
-    } catch {
+    } catch (err) {
       setError(
-        'Could not send your RSVP. Please try again or contact us on WhatsApp.'
+        err.message ||
+          'Could not send your RSVP. Please try again or contact us on WhatsApp.'
       );
     } finally {
       setSubmitting(false);
