@@ -24,6 +24,6 @@
 
 Open in browser (GET test):
 
-https://script.google.com/macros/s/AKfycbwyYBtLYqC5EyqDx0FtLZxL8z2lbbwQamowqN9RdaliAm9_LRcVq2UOfRIOLYRfayO76w/exec
+https://script.google.com/macros/s/AKfycbycsTuHrFhrC3wt7mcxUMyq0Bw5LyBN6OxCnQ-3MDaNlR8xDe4EO6q3hkNrFlzgnvNWWw/exec
 
 Should show: `{"success":true,"message":"RSVP endpoint is running"}`
