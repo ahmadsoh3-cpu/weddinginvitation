@@ -1,7 +1,7 @@
 const GOOGLE_SCRIPT_URL =
   process.env.GOOGLE_SCRIPT_URL ||
   process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL ||
-  'https://script.google.com/macros/s/AKfycbw92A65JMorbXMFKeTh0G0n7PnLLZct0NaBOBak7JhEPQpAPhD4h5E5DAE0FZvePu0Vvg/exec';
+  'https://script.google.com/macros/s/AKfycbwyYBtLYqC5EyqDx0FtLZxL8z2lbbwQamowqN9RdaliAm9_LRcVq2UOfRIOLYRfayO76w/exec';
 
 export async function POST(request) {
   try {
