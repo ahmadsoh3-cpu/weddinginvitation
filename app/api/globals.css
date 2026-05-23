@@ -306,7 +306,6 @@ body {
   z-index: 8;
   width: min(640px, 92vw);
   padding: clamp(36px,6vw,52px) clamp(28px,5vw,44px);
-  overflow: visible;
   background: linear-gradient(
     165deg,
     rgba(255,252,247,0.88) 0%,
@@ -330,62 +329,15 @@ body {
 }
 @keyframes shimmer { 0%, 100% { background-position: 200% 200%; } 50% { background-position: 0% 0%; } }
 
-/* Floral bouquet — bottom-left corner */
-.hero-card::after {
-  content: '';
-  position: absolute;
-  bottom: -20px;
-  left: -20px;
-  width: 200px;
-  height: 165px;
-  background-image: url('/floral-bouquet.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  pointer-events: none;
-  z-index: 10;
-  opacity: 0.92;
-  transform: rotate(10deg) scaleX(-1);
-}
-
 .hero-card-frame {
   position: absolute; inset: 14px;
   border: 1px solid rgba(196,165,116,0.35); pointer-events: none;
 }
-
-/* Floral bouquet — top-right corner (smaller, flipped) */
-.hero-card-frame::before {
-  content: '';
-  position: absolute;
-  top: -45px;
-  right: -30px;
-  width: 170px;
-  height: 140px;
-  background-image: url('/floral-bouquet.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: 0.82;
-  transform: rotate(190deg);
-  z-index: 10;
+.hero-card-frame::before, .hero-card-frame::after {
+  content: '❧'; position: absolute; font-size: 14px; color: var(--gold); opacity: 0.65;
 }
-
-/* Floral bouquet — bottom-right corner (mirrored) */
-.hero-card-frame::after {
-  content: '';
-  position: absolute;
-  bottom: -24px;
-  right: -28px;
-  width: 155px;
-  height: 125px;
-  background-image: url('/floral-bouquet.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: 0.78;
-  transform: rotate(-15deg);
-  z-index: 10;
-}
+.hero-card-frame::before { top: -8px; left: 50%; transform: translateX(-50%); }
+.hero-card-frame::after { bottom: -8px; left: 50%; transform: translateX(-50%) scaleY(-1); }
 
 .hero-inner {
   position: relative; width: 100%; z-index: 1;
