@@ -29,10 +29,10 @@ export default function DrapeCurtain({ onOpened }) {
 
     const slide = () => {
       if (leftRef.current) {
-        leftRef.current.style.transform = 'translate3d(-100%, 0, 0)';
+        leftRef.current.style.transform = 'translate3d(calc(-100% - 4px), 0, 0)';
       }
       if (rightRef.current) {
-        rightRef.current.style.transform = 'translate3d(100%, 0, 0)';
+        rightRef.current.style.transform = 'translate3d(calc(100% + 4px), 0, 0)';
       }
     };
 

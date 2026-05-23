@@ -86,7 +86,6 @@ function DrapeCurtain({ isOpen, isGone, onReveal }) {
       data-open={isOpen ? 'true' : 'false'}>
       <div ref={leftRef} className="curtain curtain-left">
         <div className="curtain-fabric" />
-        <div className="curtain-trim trim-right" />
         <div className="curtain-tassel tassel-right">
           {Array.from({ length: 14 }).map((_, i) => (
             <div key={i} className="tassel-strand" style={{ animationDelay: `${i * 0.07}s` }} />
@@ -111,14 +110,12 @@ function DrapeCurtain({ isOpen, isGone, onReveal }) {
       </div>
       <div ref={rightRef} className="curtain curtain-right">
         <div className="curtain-fabric" />
-        <div className="curtain-trim trim-left" />
         <div className="curtain-tassel tassel-left">
           {Array.from({ length: 14 }).map((_, i) => (
             <div key={i} className="tassel-strand" style={{ animationDelay: `${i * 0.07}s` }} />
           ))}
         </div>
       </div>
-      <div className="curtain-seam" />
       {waiting && (
         <button type="button" className="curtain-tap-overlay" onClick={handleReveal}
           aria-label="Touch to open the invitation" />

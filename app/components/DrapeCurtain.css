@@ -1,4 +1,4 @@
-/* Isolated drape styles — avoid editing globals.css for curtain fixes */
+/* Isolated drape styles */
 
 .drape-screen {
   position: fixed;
@@ -7,6 +7,7 @@
   overflow: hidden;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  background: #e8ddd0;
 }
 
 .drape-screen--closed {
@@ -16,7 +17,6 @@
 .drape-panel {
   position: absolute;
   top: 0;
-  width: 50%;
   height: 100%;
   z-index: 10;
   overflow: hidden;
@@ -27,18 +27,20 @@
 
 .drape-panel--left {
   left: 0;
+  width: calc(50% + 2px);
 }
 
 .drape-panel--right {
   right: 0;
+  width: calc(50% + 2px);
 }
 
 .drape-screen--open .drape-panel--left {
-  transform: translate3d(-100%, 0, 0);
+  transform: translate3d(calc(-100% - 4px), 0, 0);
 }
 
 .drape-screen--open .drape-panel--right {
-  transform: translate3d(100%, 0, 0);
+  transform: translate3d(calc(100% + 4px), 0, 0);
 }
 
 .drape-panel-fabric {
@@ -48,9 +50,9 @@
     radial-gradient(ellipse at 20% 35%, rgba(255, 255, 255, 0.07) 0%, transparent 55%),
     radial-gradient(ellipse at 80% 70%, rgba(0, 0, 0, 0.12) 0%, transparent 50%),
     repeating-linear-gradient(
-      88deg,
+      90deg,
       transparent 0px,
-      rgba(0, 0, 0, 0.18) 1.5px,
+      rgba(0, 0, 0, 0.06) 1px,
       transparent 4px
     ),
     linear-gradient(
@@ -64,6 +66,11 @@
     );
 }
 
+.drape-panel--right .drape-panel-fabric {
+  transform: scaleX(-1);
+}
+
+/* Trim strips on outer edges only */
 .drape-panel-trim {
   position: absolute;
   top: 0;
@@ -88,22 +95,13 @@
   left: 0;
 }
 
+/* Seam — permanently hidden */
 .drape-seam {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 3px;
-  height: 100%;
-  transform: translateX(-50%);
-  z-index: 15;
-  background: linear-gradient(180deg, #e8d4b0, #c4a574, #a68b5c, #c4a574, #e8d4b0);
-  box-shadow: 0 0 16px rgba(196, 165, 116, 0.45);
-  transition: opacity 0.15s ease 0s;
+  display: none !important;
 }
 
 .drape-seam--hide {
-  opacity: 0 !important;
-  pointer-events: none;
+  display: none !important;
 }
 
 .drape-center {
