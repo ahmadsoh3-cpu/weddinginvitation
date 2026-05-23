@@ -1,6 +1,7 @@
 import './globals.css';
 
 export const metadata = {
+  metadataBase: new URL('https://nwedsjiya.vercel.app'),
   title: 'Hannan & Jayesha — Nikkah Invitation',
   description:
     'You are cordially invited to the Nikkah of Hannan Ahmed & Jayesha Farooqi on 12th June 2026 at Bahria Golf & Country Club.',
@@ -12,11 +13,20 @@ export const metadata = {
     type: 'website',
     locale: 'en_US',
     siteName: 'Hannan & Jayesha Wedding',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Hannan Ahmed & Jayesha Farooqi — Nikkah Invitation',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Hannan & Jayesha — Nikkah Invitation',
     description: 'You are cordially invited to our Nikkah ceremony',
+    images: ['/og-image.png'],
   },
   robots: {
     index: false,
