@@ -67,7 +67,6 @@ export default function DrapeCurtain({ onOpened }) {
     >
       <div ref={leftRef} className="drape-panel drape-panel--left">
         <div className="drape-panel-fabric" />
-        <div className="drape-panel-trim drape-panel-trim--right" />
       </div>
 
       <div className={`drape-center ${isOpen ? 'drape-center--hide' : ''}`}>
@@ -97,10 +96,9 @@ export default function DrapeCurtain({ onOpened }) {
 
       <div ref={rightRef} className="drape-panel drape-panel--right">
         <div className="drape-panel-fabric" />
-        <div className="drape-panel-trim drape-panel-trim--left" />
       </div>
 
-      <div className={`drape-seam ${isOpen ? 'drape-seam--hide' : ''}`} />
+      <div className="drape-seam drape-seam--hide" />
     </div>
   );
 }
