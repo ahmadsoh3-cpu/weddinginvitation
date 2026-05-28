@@ -4,12 +4,12 @@ export const metadata = {
   metadataBase: new URL('https://hannanwedsjiya.vercel.app'),
   title: 'Hannan & Jayesha — Nikkah Invitation',
   description:
-    'You are cordially invited to the Nikkah of Hannan Ahmed & Jayesha Farooqi on 12th June 2026 at Bahria Golf & Country Club.',
+    'You are cordially invited to the Nikkah of Hannan Ahmed & Jayesha Farooqi on 8th June 2026 at Bahria Golf & Country Club.',
   keywords: ['wedding invitation', 'nikkah', 'Hannan Ahmed', 'Jayesha Farooqi', 'wedding 2026'],
   authors: [{ name: 'Hannan & Jayesha' }],
   openGraph: {
     title: 'Hannan Ahmed & Jayesha Farooqi — Nikkah Invitation',
-    description: 'Join us for our Nikkah on 12th June 2026 at Bahria Golf & Country Club. Your presence would make our special day complete.',
+    description: 'Join us for our Nikkah on 8th June 2026 at Bahria Golf & Country Club. Your presence would make our special day complete.',
     type: 'website',
     locale: 'en_US',
     siteName: 'Hannan & Jayesha Wedding',
@@ -40,8 +40,8 @@ export default function RootLayout({ children }) {
     '@type': 'Event',
     name: 'Hannan Ahmed & Jayesha Farooqi — Nikkah Ceremony',
     description: 'Join us for the Nikkah ceremony of Hannan Ahmed and Jayesha Farooqi',
-    startDate: '2026-06-12T18:00:00+05:00',
-    endDate: '2026-06-12T22:00:00+05:00',
+    startDate: '2026-06-08T18:00:00+05:00',
+    endDate: '2026-06-08T22:00:00+05:00',
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     location: {

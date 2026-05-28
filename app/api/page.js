@@ -11,7 +11,7 @@ const VENUE_MAPS_URL = 'https://maps.app.goo.gl/B6AZX9tVDVF85AQY8';
 const shareInvitation = async () => {
   const shareData = {
     title: 'Hannan & Jayesha — Nikkah Invitation',
-    text: 'You are cordially invited to the Nikkah of Hannan Ahmed & Jayesha Farooqi on 12th June 2026',
+    text: 'You are cordially invited to the Nikkah of Hannan Ahmed & Jayesha Farooqi on 8th June 2026',
     url: window.location.href,
   };
   try {
@@ -200,7 +200,7 @@ function Countdown() {
 
   useEffect(() => {
     setMounted(true);
-    const target = new Date('2026-06-12T18:00:00+05:00');
+    const target = new Date('2026-06-08T18:00:00+05:00');
     const tick = () => {
       const diff = target.getTime() - Date.now();
       if (diff <= 0) { setTime({ d: 0, h: 0, m: 0, s: 0 }); return; }
@@ -771,7 +771,7 @@ export default function WeddingPage() {
               <ScratchReveal>
                 <div className="wedding-reveal-card wedding-reveal-card--compact">
                   <p className="wedding-reveal-day">Friday</p>
-                  <p className="wedding-reveal-date">12th June 2026</p>
+                  <p className="wedding-reveal-date">8th June 2026</p>
                   <p className="wedding-reveal-time-detail">6:00 PM</p>
                   <p className="wedding-reveal-venue">Bahria Golf &amp; Country Club</p>
                   <a href={VENUE_MAPS_URL} className="wedding-reveal-map" target="_blank" rel="noopener noreferrer">
@@ -845,7 +845,7 @@ export default function WeddingPage() {
             </svg>
           </div>
           <p className="footer-script">Hannan & Jayesha</p>
-          <p className="footer-date">12th June 2026</p>
+          <p className="footer-date">8th June 2026</p>
           <GoldDivider />
           <p className="footer-closing">
             With gratitude and love, we look forward to celebrating with you.
