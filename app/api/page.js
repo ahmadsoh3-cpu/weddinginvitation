@@ -712,7 +712,7 @@ export default function WeddingPage() {
               </div>
 
               <div className="hero-names reveal">
-                <h1 className="name groom-name">Hannan Ahmed</h1>
+                <h1 className="name groom-name">Hannan <span className="capital-word">Ahmed</span></h1>
                 <div className="names-join">
                   <div className="join-line" />
                   <span className="join-script">&</span>
