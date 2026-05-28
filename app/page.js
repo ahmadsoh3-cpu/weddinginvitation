@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { submitRsvp } from './lib/submitRsvp';
-
+import { Analytics } from "@vercel/analytics/next"
 const CONTACT_NUMBER = '+923364204333';
 const REVEAL_STROKES = 38;
 const WHATSAPP_NUMBER = '923364204333';

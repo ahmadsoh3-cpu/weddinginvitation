@@ -1,7 +1,7 @@
 import './globals.css';
-
+import { Analytics } from "@vercel/analytics/next"
 export const metadata = {
-  metadataBase: new URL('https://nwedsjiya.vercel.app'),
+  metadataBase: new URL('https://hannanwedsjiya.vercel.app'),
   title: 'Hannan & Jayesha — Nikkah Invitation',
   description:
     'You are cordially invited to the Nikkah of Hannan Ahmed & Jayesha Farooqi on 12th June 2026 at Bahria Golf & Country Club.',
