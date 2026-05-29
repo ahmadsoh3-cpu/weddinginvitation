@@ -10,6 +10,7 @@ export const metadata = {
   openGraph: {
     title: 'Hannan Ahmed & Jayesha Farooqi — Nikkah Invitation',
     description: 'Join us for our Nikkah on 8th June 2026 at Bahria Golf & Country Club. Your presence would make our special day complete.',
+    url: 'https://hannanwedsjiya.vercel.app',
     type: 'website',
     locale: 'en_US',
     siteName: 'Hannan & Jayesha Wedding',
@@ -72,6 +73,8 @@ export default function RootLayout({ children }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <meta property="og:url" content="https://hannanwedsjiya.vercel.app" />
+        <meta property="fb:app_id" content="966242223397117" />
         <meta name="theme-color" content="#FFFCF7" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
