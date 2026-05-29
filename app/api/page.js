@@ -770,7 +770,7 @@ export default function WeddingPage() {
             <EventCard icon="🕌" tag="Announcement" name="Nikkah">
               <ScratchReveal>
                 <div className="wedding-reveal-card wedding-reveal-card--compact">
-                  <p className="wedding-reveal-day">Friday</p>
+                  <p className="wedding-reveal-day">Monday</p>
                   <p className="wedding-reveal-date">8th June 2026</p>
                   <p className="wedding-reveal-time-detail">6:00 PM</p>
                   <p className="wedding-reveal-venue">Bahria Golf &amp; Country Club</p>
