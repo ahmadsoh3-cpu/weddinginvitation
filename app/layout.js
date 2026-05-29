@@ -1,4 +1,5 @@
 import './globals.css';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next"
 export const metadata = {
   metadataBase: new URL('https://hannanwedsjiya.vercel.app'),
@@ -79,7 +80,7 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body>{children}</body>
+      <body>{children}<SpeedInsights /></body>
     </html>
   );
 }
